@@ -1,0 +1,9 @@
+{
+	"terminal.integrated.defaultProfile.windows": "RaspberryPiSSH",
+	"terminal.integrated.profiles.windows": {
+		"RaspberryPiSSH": {
+			"path": "C:\\Users\\zachd\\scoop\\shims\\ssh.exe",
+			"args": ["pi@192.168.0.111"]
+		}
+	}
+}
