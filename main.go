@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/stianeikeland/go-rpio"
@@ -8,7 +12,7 @@ import (
 var (
 	exit = false
 	result string
-	
+
 	// Buttons in faceplate
 	KEY_UP     = rpio.Pin(6) 
 	KEY_DOWN   = rpio.Pin(19)
@@ -23,29 +27,43 @@ var (
 func main() {
 	initGpio()
 	for !exit {
-		// Max 16 println statements
-		println(time.Now().Local().Format("01-02       1504"))
-		println("KEY_1     ", KEY_BTN1.Read())
-		println("KEY_2     ", KEY_BTN2.Read())
-		println("KEY_3     ", KEY_BTN3.Read())
-		println("KEY_CLK   ", KEY_PRESS.Read())
-		println("KEY_UP	  ", KEY_UP.Read())
-		println("KEY_DOWN  ", KEY_DOWN.Read())
-		println("KEY_LEFT  ", KEY_LEFT.Read())
-		println("KEY_RIGHT ", KEY_RIGHT.Read())
-
-		// Result is max 16x16 characters
-		clearDisplay()
-		time.Sleep(200*time.Millisecond)
+		// Max 16 println statements with length of 16
+		output := []string{}
+		output = append(output, time.Now().Local().Format("01-02       1504"))
+		output = append(output, "KEY_1     " + strconv.Itoa(int(KEY_BTN1.Read())))
+		output = append(output, "KEY_2     " + strconv.Itoa(int(KEY_BTN2.Read())))
+		output = append(output, "KEY_3     " + strconv.Itoa(int(KEY_BTN3.Read())))
+		output = append(output, "KEY_CLK   " + strconv.Itoa(int(KEY_PRESS.Read())))
+		output = append(output, "KEY_UP    " + strconv.Itoa(int(KEY_UP.Read())))
+		output = append(output, "KEY_DOWN  " + strconv.Itoa(int(KEY_DOWN.Read())))
+		output = append(output, "KEY_LEFT  " + strconv.Itoa(int(KEY_LEFT.Read())))
+		output = append(output, "KEY_RIGHT " + strconv.Itoa(int(KEY_RIGHT.Read())))
+		
+		time.Sleep(100*time.Millisecond)
+		write(output)
+		//exit = true
 	}
 	rpio.Close()
 }
 
-func clearDisplay() {
-	// Modify this for the exact amount of \n needed
-	//				1 2 3 4 5 6 7 8 9 0 2 3 4 5 6 7 
-	cleanScreen := "\n\n\n\n\n\n"
-	print(cleanScreen)
+func write(input []string) {
+	if len(input) > 16 {
+		log.Fatalln("ERR: PRINTING ARRAY LARGER THAN 16")
+		os.Exit(2)
+	} else if len(input) < 16 {
+		input = append(input, string(len(input)))
+		for len(input) != 16 {
+			input = append(input, "")
+		}
+	}
+
+
+
+	output := strings.Join(input, "\n")
+	print("\033[2J")
+	print(output)
+	//print(string(len(input))+"\n")
+	//fmt.Printf("%v\n", input)
 }
 
 func initGpio() {
