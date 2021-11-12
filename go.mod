@@ -1,3 +1,5 @@
-module pi-control-center
+module control-panel
 
 go 1.17
+
+require github.com/stianeikeland/go-rpio v4.2.0+incompatible
